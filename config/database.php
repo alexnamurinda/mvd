@@ -6,8 +6,8 @@
 
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'businesspro');
-define('DB_USER', 'root');         // <-- change for production
-define('DB_PASS', '');             // <-- change for production
+define('DB_USER', 'user1');         // <-- change for production
+define('DB_PASS', 'user1@mysql123');    // <-- change for production
 define('DB_CHARSET', 'utf8mb4');
 
 try {
