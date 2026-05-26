@@ -156,6 +156,7 @@ CREATE TABLE expenses (
     expense_date     DATE NOT NULL,
     method           ENUM('cash','mtn_momo','airtel_money','bank','card','other') DEFAULT 'cash',
     vendor           VARCHAR(150),
+    vendor_phone     VARCHAR(30) DEFAULT NULL,
     notes            TEXT,
     receipt_no       VARCHAR(50) UNIQUE,
     is_recurring     TINYINT(1) DEFAULT 0,
@@ -316,3 +317,9 @@ INSERT INTO income_sources (user_id, name, icon, color) VALUES
 (1, 'Salary/Office Job',  'bi-briefcase', '#16A34A'),
 (1, 'Side Hustles',       'bi-cash-stack', '#F59E0B'),
 (1, 'Other',              'bi-three-dots', '#71717A');
+
+-- ============================================================
+-- MIGRATIONS (run once on existing databases)
+-- ============================================================
+-- v1.1: Add vendor contact phone to expenses
+ALTER TABLE expenses ADD COLUMN IF NOT EXISTS vendor_phone VARCHAR(30) DEFAULT NULL AFTER vendor;

@@ -124,6 +124,23 @@ h3 { font-size: 1.1rem; }
     border: 2px solid var(--card);
 }
 
+.icon-btn .badge-count {
+    position: absolute;
+    top: 4px; right: 4px;
+    min-width: 16px; height: 16px;
+    background: var(--accent);
+    border-radius: 99px;
+    border: 2px solid var(--card);
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    line-height: 1;
+}
+
 /* ============== Hero greeting card (dashboard) ============== */
 .hero-greeting {
     background: linear-gradient(135deg, var(--primary) 0%, #115E59 100%);
@@ -614,3 +631,33 @@ textarea.form-control { min-height: 90px; resize: vertical; }
     display: inline-block;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============== Recurring expense countdown chip ============== */
+.recurring-chip {
+    display: inline-flex;
+    align-items: center;
+    font-size: .68rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 99px;
+    background: var(--primary-50);
+    color: var(--primary);
+    margin-top: 4px;
+    letter-spacing: .01em;
+}
+.recurring-chip.soon   { background: #FEF3C7; color: #92400E; }
+.recurring-chip.urgent { background: #FEE2E2; color: #991B1B; }
+
+/* ============== Receipt paper: missing utility classes ============== */
+.receipt-paper .dashed {
+    border-top: 1px dashed #ccc;
+    margin: 8px 0;
+}
+.receipt-paper .row-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 3px 0;
+    font-size: 12px;
+    gap: 8px;
+}

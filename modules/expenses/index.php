@@ -35,6 +35,9 @@ if (!empty($expenses)) {
     arsort($breakdown);
 }
 
+// Recurring due-soon count (for in-page banner; topbar handles the badge separately)
+$recurringSoonCount = getRecurringDueSoon($pdo, $userId, 7);
+
 $pageTitle = 'Expenses';
 include __DIR__ . '/../../includes/header.php';
 include __DIR__ . '/../../includes/offcanvas.php';
@@ -43,6 +46,13 @@ include __DIR__ . '/../../includes/topbar.php';
 ?>
 
 <div class="px-page mt-page">
+    <?php if ($recurringSoonCount > 0): ?>
+    <div class="alert alert-warning d-flex align-items-center gap-2 mb-3" style="border-radius:14px;">
+        <i class="bi bi-arrow-repeat" style="font-size:1.1rem;flex-shrink:0;"></i>
+        <span><strong><?= $recurringSoonCount ?> recurring expense<?= $recurringSoonCount > 1 ? 's' : '' ?></strong> due within the next 7 days.</span>
+    </div>
+    <?php endif; ?>
+
     <div class="balance-card">
         <div class="label">Spent <?= date('M Y') ?></div>
         <div class="amount" style="color:var(--danger);"><?= money($totalMonth) ?></div>
@@ -88,12 +98,40 @@ include __DIR__ . '/../../includes/topbar.php';
     <div class="list-card" id="expList">
         <?php if (empty($expenses)): ?>
             <div class="empty-state"><div class="icon-circle"><i class="bi bi-receipt"></i></div>No expenses yet.<a href="add.php" class="btn btn-primary btn-sm mt-3">Log First Expense</a></div>
-        <?php else: foreach ($expenses as $r): ?>
+        <?php else: foreach ($expenses as $r):
+            // Build recurring countdown chip
+            $recurChip = '';
+            if ($r['is_recurring'] && $r['recurring_period']) {
+                $next = nextRecurringDate($r['expense_date'], $r['recurring_period']);
+                if ($next) {
+                    $today    = new DateTime(date('Y-m-d'));
+                    $diff     = (int)$today->diff($next)->days;
+                    $inverted = (int)$today->diff($next)->invert;
+                    $daysUntil = $inverted ? -$diff : $diff;
+
+                    if ($daysUntil <= 0) {
+                        $label = $daysUntil === 0 ? '↻ Due today!' : '↻ ' . abs($daysUntil) . 'd overdue';
+                        $cls   = 'urgent';
+                    } elseif ($daysUntil === 1) {
+                        $label = '↻ Due tomorrow';
+                        $cls   = 'urgent';
+                    } elseif ($daysUntil <= 7) {
+                        $label = '↻ Due in ' . $daysUntil . ' days';
+                        $cls   = 'soon';
+                    } else {
+                        $label = '↻ Due ' . $next->format('M j');
+                        $cls   = '';
+                    }
+                    $recurChip = '<span class="recurring-chip ' . $cls . '">' . e($label) . '</span>';
+                }
+            }
+        ?>
             <a href="receipt.php?id=<?= $r['id'] ?>" class="list-item" data-search-row>
                 <div class="li-ico" style="background:<?= e($r['cat_color'] ?: '#64748B') ?>;color:#fff;"><i class="bi <?= e($r['cat_icon'] ?: 'bi-receipt') ?>"></i></div>
                 <div class="li-body">
                     <div class="li-title"><?= e($r['title']) ?></div>
                     <div class="li-sub"><?= e($r['cat_name'] ?: 'Uncategorized') ?> · <?= friendlyDate($r['expense_date']) ?></div>
+                    <?= $recurChip ?>
                 </div>
                 <div class="li-right">
                     <div class="li-amount out">−<?= money($r['amount']) ?></div>

@@ -20,14 +20,19 @@ $topbarGradient = $topbarGradient ?? false;
     </div>
     <div class="d-flex align-items-center gap-1">
         <a href="<?= BASE_URL ?>/modules/notes/index.php" class="icon-btn" title="Notes"><i class="bi bi-journal-text"></i></a>
-        <a href="<?= BASE_URL ?>/modules/planner/index.php" class="icon-btn" title="Tasks">
+        <a href="<?= BASE_URL ?>/modules/planner/index.php" class="icon-btn" title="Tasks &amp; Reminders">
             <i class="bi bi-bell"></i>
             <?php
-            // small dot if any pending tasks today
             $stmt = $pdo->prepare("SELECT COUNT(*) FROM tasks WHERE user_id = ? AND status = 'pending' AND (due_date IS NULL OR due_date <= CURDATE())");
             $stmt->execute([uid()]);
-            if ($stmt->fetchColumn() > 0) echo '<span class="badge-dot"></span>';
+            $pendingTasks   = (int)$stmt->fetchColumn();
+            $recurringSoon  = getRecurringDueSoon($pdo, uid(), 7);
+            $notifTotal     = $pendingTasks + $recurringSoon;
+            if ($notifTotal > 0):
+                $badge = $notifTotal > 99 ? '99+' : $notifTotal;
             ?>
+                <span class="badge-count"><?= $badge ?></span>
+            <?php endif; ?>
         </a>
     </div>
 </header>

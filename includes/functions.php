@@ -105,3 +105,35 @@ function sumQuery($pdo, $sql, $params = []) {
     $stmt->execute($params);
     return (float)$stmt->fetchColumn();
 }
+
+// Compute next scheduled occurrence of a recurring expense (returns DateTime >= today, or null)
+function nextRecurringDate($expenseDate, $period) {
+    if (!$period || !$expenseDate) return null;
+    $base  = new DateTime($expenseDate);
+    $today = new DateTime(date('Y-m-d'));
+    while ($base < $today) {
+        switch ($period) {
+            case 'daily':   $base->modify('+1 day');   break;
+            case 'weekly':  $base->modify('+7 days');  break;
+            case 'monthly': $base->modify('+1 month'); break;
+            case 'yearly':  $base->modify('+1 year');  break;
+            default: return null;
+        }
+    }
+    return $base;
+}
+
+// Count recurring expenses whose next due date falls within $days days from today
+function getRecurringDueSoon($pdo, $userId, $days = 7) {
+    $stmt = $pdo->prepare("SELECT expense_date, recurring_period FROM expenses WHERE user_id=? AND is_recurring=1 AND recurring_period IS NOT NULL");
+    $stmt->execute([$userId]);
+    $rows      = $stmt->fetchAll();
+    $today     = new DateTime(date('Y-m-d'));
+    $threshold = (clone $today)->modify("+{$days} days");
+    $count = 0;
+    foreach ($rows as $r) {
+        $next = nextRecurringDate($r['expense_date'], $r['recurring_period']);
+        if ($next !== null && $next <= $threshold) $count++;
+    }
+    return $count;
+}
