@@ -322,4 +322,4 @@ INSERT INTO income_sources (user_id, name, icon, color) VALUES
 -- MIGRATIONS (run once on existing databases)
 -- ============================================================
 -- v1.1: Add vendor contact phone to expenses
-ALTER TABLE expenses ADD COLUMN IF NOT EXISTS vendor_phone VARCHAR(30) DEFAULT NULL AFTER vendor;
+ALTER TABLE expenses ADD COLUMN vendor_phone VARCHAR(30) DEFAULT NULL AFTER vendor;
