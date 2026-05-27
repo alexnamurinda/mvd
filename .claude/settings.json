@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(New-Item -ItemType Directory -Force -Path \"d:\\\\INSTALLED SOFTWARES\\\\XAMP\\\\htdocs\\\\mvd\\\\uploads\\\\income_attachments\")",
+      "Bash(Out-Null)",
+      "Bash(Write-Output \"Created\")",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"d:\\\\INSTALLED SOFTWARES\\\\XAMP\\\\htdocs\\\\mvd\\\\uploads\\\\income_attachments\")",
+      "PowerShell(\"Created OK\")"
+    ]
+  }
+}

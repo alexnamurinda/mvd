@@ -181,16 +181,21 @@ CREATE TABLE income_sources (
 );
 
 CREATE TABLE incomes (
-    id          INT AUTO_INCREMENT PRIMARY KEY,
-    user_id     INT NOT NULL,
-    business_id INT DEFAULT NULL,
-    source_id   INT DEFAULT NULL,
-    title       VARCHAR(150) NOT NULL,
-    amount      DECIMAL(12,2) NOT NULL,
-    income_date DATE NOT NULL,
-    method      ENUM('cash','mtn_momo','airtel_money','bank','card','other') DEFAULT 'cash',
-    notes       TEXT,
-    created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
+    id              INT AUTO_INCREMENT PRIMARY KEY,
+    user_id         INT NOT NULL,
+    business_id     INT DEFAULT NULL,
+    source_id       INT DEFAULT NULL,
+    title           VARCHAR(150) NOT NULL,
+    amount          DECIMAL(12,2) NOT NULL,
+    income_date     DATE NOT NULL,
+    method          ENUM('cash','mtn_momo','airtel_money','bank','card','other') DEFAULT 'cash',
+    notes           TEXT,
+    sender_name     VARCHAR(150) DEFAULT NULL,
+    sender_phone    VARCHAR(30)  DEFAULT NULL,
+    sender_address  VARCHAR(255) DEFAULT NULL,
+    receipt_no      VARCHAR(50)  UNIQUE DEFAULT NULL,
+    attachment      VARCHAR(255) DEFAULT NULL,
+    created_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (business_id) REFERENCES businesses(id) ON DELETE SET NULL,
     FOREIGN KEY (source_id) REFERENCES income_sources(id) ON DELETE SET NULL,
@@ -323,3 +328,11 @@ INSERT INTO income_sources (user_id, name, icon, color) VALUES
 -- ============================================================
 -- v1.1: Add vendor contact phone to expenses
 ALTER TABLE expenses ADD COLUMN vendor_phone VARCHAR(30) DEFAULT NULL AFTER vendor;
+
+-- v1.2: Add sender details, receipt, attachment to incomes
+ALTER TABLE incomes ADD COLUMN sender_name    VARCHAR(150) DEFAULT NULL AFTER notes;
+ALTER TABLE incomes ADD COLUMN sender_phone   VARCHAR(30)  DEFAULT NULL AFTER sender_name;
+ALTER TABLE incomes ADD COLUMN sender_address VARCHAR(255) DEFAULT NULL AFTER sender_phone;
+
+ALTER TABLE incomes ADD COLUMN receipt_no     VARCHAR(50)  UNIQUE DEFAULT NULL AFTER sender_address;
+ALTER TABLE incomes ADD COLUMN attachment     VARCHAR(255) DEFAULT NULL AFTER receipt_no;

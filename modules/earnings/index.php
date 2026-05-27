@@ -82,22 +82,38 @@ include __DIR__ . '/../../includes/topbar.php';
     </div>
     <?php endif; ?>
 
-    <div class="section-title"><h3>Records — Range total <span style="color:var(--success);">+<?= money($rangeTotal) ?></span></h3><a href="add.php">+ Add</a></div>
-    <div class="list-card">
+    <div class="section-title"><h3>Records — <span style="color:var(--success);">+<?= money($rangeTotal) ?></span></h3><a href="add.php">+ Add</a></div>
+    <div class="search-bar"><i class="bi bi-search"></i><input type="text" placeholder="Search income records…" data-search-target="#incList"></div>
+    <div class="list-card" id="incList">
         <?php if (empty($incomes)): ?>
             <div class="empty-state"><div class="icon-circle"><i class="bi bi-cash-coin"></i></div>No income recorded.<a href="add.php" class="btn btn-primary btn-sm mt-3">Log First Income</a></div>
         <?php else: foreach ($incomes as $r): ?>
-            <div class="list-item">
+            <a href="receipt.php?id=<?= $r['id'] ?>" class="list-item" data-search-row>
                 <div class="li-ico" style="background:<?= e($r['src_color'] ?: '#16A34A') ?>;color:#fff;"><i class="bi bi-cash-coin"></i></div>
                 <div class="li-body">
-                    <div class="li-title"><?= e($r['title']) ?></div>
-                    <div class="li-sub"><?= e($r['src_name'] ?: 'Other') ?> · <?= friendlyDate($r['income_date']) ?></div>
+                    <div class="li-title">
+                        <?= e($r['title']) ?>
+                        <?php if (!empty($r['attachment'])): ?>
+                            <i class="bi bi-paperclip" style="font-size:.75rem;color:var(--text-muted);margin-left:4px;" title="Has attachment"></i>
+                        <?php endif; ?>
+                    </div>
+                    <div class="li-sub">
+                        <?= e($r['src_name'] ?: 'Other') ?> · <?= friendlyDate($r['income_date']) ?>
+                        <?php if (!empty($r['sender_name'])): ?>
+                            · <i class="bi bi-person" style="font-size:.7rem;"></i> <?= e($r['sender_name']) ?>
+                        <?php endif; ?>
+                    </div>
                 </div>
                 <div class="li-right">
                     <div class="li-amount in">+<?= money($r['amount']) ?></div>
-                    <div class="li-time"><?= ucfirst(str_replace('_',' ',$r['method'])) ?></div>
+                    <div class="li-time">
+                        <?= ucfirst(str_replace('_',' ',$r['method'])) ?>
+                        <?php if (!empty($r['receipt_no'])): ?>
+                            <i class="bi bi-receipt" style="font-size:.68rem;color:var(--primary);margin-left:2px;" title="Receipt available"></i>
+                        <?php endif; ?>
+                    </div>
                 </div>
-            </div>
+            </a>
         <?php endforeach; endif; ?>
     </div>
 </div>

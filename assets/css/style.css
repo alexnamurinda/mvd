@@ -632,6 +632,24 @@ textarea.form-control { min-height: 90px; resize: vertical; }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ============== Section divider (form sections) ============== */
+.section-divider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 18px 0 12px;
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+.section-divider::before,
+.section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
 /* ============== Recurring expense countdown chip ============== */
 .recurring-chip {
     display: inline-flex;
