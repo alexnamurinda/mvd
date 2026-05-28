@@ -1,6 +1,7 @@
-# Prevent PHP execution in this directory
-php_flag engine off
+# Prevent directory listing
 Options -Indexes
-<FilesMatch "\.(php|php5|phtml|pl|py|rb|sh|cgi)$">
-    Deny from all
+
+# Block execution of server-side scripts
+<FilesMatch "\.(php|php3|php4|php5|php7|phtml|pl|py|rb|sh|cgi|asp|aspx|jsp)$">
+    Require all denied
 </FilesMatch>

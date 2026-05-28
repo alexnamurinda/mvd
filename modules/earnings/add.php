@@ -52,15 +52,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$errors) {
-        // Save file
+        // Save file — only store path if the file is actually written to disk
         if ($hasFile && $_FILES['attachment']['error'] === UPLOAD_ERR_OK) {
             $ext       = strtolower(pathinfo($_FILES['attachment']['name'], PATHINFO_EXTENSION));
             $uploadDir = __DIR__ . '/../../uploads/income_attachments/';
-            if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
-            $safeName       = $userId . '_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
-            move_uploaded_file($_FILES['attachment']['tmp_name'], $uploadDir . $safeName);
-            $attachmentPath = 'uploads/income_attachments/' . $safeName;
+            if (!is_dir($uploadDir)) {
+                @mkdir($uploadDir, 0775, true);
+            }
+            if (is_dir($uploadDir) && is_writable($uploadDir)) {
+                $safeName = $userId . '_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+                if (move_uploaded_file($_FILES['attachment']['tmp_name'], $uploadDir . $safeName)) {
+                    $attachmentPath = 'uploads/income_attachments/' . $safeName;
+                } else {
+                    $errors[] = 'Could not save the attachment — check server write permissions on uploads/income_attachments/';
+                }
+            } else {
+                $errors[] = 'Upload directory is not writable on this server — contact your host to set write permission on uploads/income_attachments/';
+            }
         }
+    }
+
+    if (!$errors) {
 
         $receiptNo = $genReceipt ? generateReceiptNo('INC') : null;
 

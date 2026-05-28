@@ -27,9 +27,11 @@ $bizName    = $inc['biz_name'] ?: ($inc['user_biz_name'] ?: $inc['user_name']);
 $footerTxt  = $inc['receipt_footer'] ?: 'Thank you!';
 $senderPhone = $inc['sender_phone'] ?? '';
 
-// Attachment info
+// Attachment info — verify file actually exists on disk before showing it
 $attachment     = $inc['attachment'] ?? '';
-$attachmentFull = $attachment ? BASE_URL . '/' . $attachment : '';
+$attachDiskPath = $attachment ? __DIR__ . '/../../' . $attachment : '';
+$attachExists   = $attachDiskPath && file_exists($attachDiskPath);
+$attachmentFull = $attachExists ? BASE_URL . '/' . $attachment : '';
 $attachExt      = $attachment ? strtolower(pathinfo($attachment, PATHINFO_EXTENSION)) : '';
 $isImage        = in_array($attachExt, ['jpg','jpeg','png','gif']);
 $isPdf          = $attachExt === 'pdf';
@@ -131,6 +133,14 @@ include __DIR__ . '/../../includes/topbar.php';
 </div>
 
 <!-- Attachment viewer (non-printable) -->
+<?php if ($attachment && !$attachExists): ?>
+<div class="px-page no-print" style="margin-top:12px;">
+    <div class="alert alert-warning" style="font-size:.82rem;">
+        <i class="bi bi-exclamation-triangle"></i>
+        Attachment file could not be found on the server (it may not have been saved due to a permission issue).
+    </div>
+</div>
+<?php endif; ?>
 <?php if ($attachmentFull): ?>
 <div class="px-page no-print" style="margin-top:18px;margin-bottom:6px;">
     <div class="list-card" style="padding:14px;">
